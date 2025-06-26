@@ -1,3 +1,9 @@
+# Copilot agentで生成
+# LastPassとChromeのパスワードデータを比較し、差分を抽出するスクリプト
+# LastPassのCSV形式をChromeの形式に変換し、差分を出力する
+# 出力はCSVとMarkdown形式で行う
+
+
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 import numpy as np

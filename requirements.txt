@@ -1,0 +1,9 @@
+# プロジェクトで必要なPythonパッケージを記載してください。
+# 例:
+# pandas
+# jinja2
+# numpy
+pandas
+jinja2
+numpy
+icecream
