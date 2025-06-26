@@ -56,6 +56,11 @@ def main():
     only_lp.drop(columns=['key'], inplace=True)
     only_lp.to_csv(lastpass_only_file, index=False)
 
+    # ノートが空でないものだけを抽出して別ファイルに出力
+    only_lp_note = only_lp[only_lp['note'].replace({np.nan: ''}).astype(str).str.strip() != '']
+    lastpass_only_note_file = OUTPUT_DIR / 'lastpass_only_note.csv'
+    only_lp_note.to_csv(lastpass_only_note_file, index=False)
+
     # 2. 両方に存在し内容が異なるデータ（urlとusernameが主キー、passwordかnoteが異なる場合のみ）
     merged = pd.merge(lp_chrome, ch_chrome, on=['url', 'username'], suffixes=('_lp', '_ch'))
     diff = merged[(merged['password_lp'] != merged['password_ch']) | (merged['note_lp'] != merged['note_ch'])]
@@ -98,6 +103,9 @@ def main():
             'lastpass_only_sites': len(lp_sites - ch_sites),
             'chrome_only_sites': len(ch_sites - lp_sites),
             'both_sites': len(lp_sites & ch_sites),
+            # ノートが空でないものの数
+            'lastpass_note_count': lp_df['note'].replace({np.nan: ''}).astype(str).str.strip().replace('', np.nan).dropna().shape[0],
+            'chrome_note_count': ch_df['note'].replace({np.nan: ''}).astype(str).str.strip().replace('', np.nan).dropna().shape[0],
         }
         md = template.render(stats=stats)
         with open(md_path, 'w', encoding='utf-8') as f:
