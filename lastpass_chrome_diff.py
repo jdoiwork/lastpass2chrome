@@ -2,6 +2,8 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 import numpy as np
 from pathlib import Path
+from icecream import ic
+
 
 # 柔軟なディレクトリ指定
 INPUT_DIR = Path('input')
@@ -20,8 +22,8 @@ stats_md_file = OUTPUT_DIR / 'lastpass_chrome_stats.md'
 
 def main():
     # CSV読み込み
-    lp = pd.read_csv(lastpass_file)
-    ch = pd.read_csv(chrome_file)
+    lp = pd.read_csv(lastpass_file, na_filter=False)
+    ch = pd.read_csv(chrome_file, na_filter=False)
 
     # キー列を作成
     lp['key'] = lp['url'].fillna('') + '|' + lp['username'].fillna('')
@@ -56,17 +58,21 @@ def main():
     only_lp.drop(columns=['key'], inplace=True)
     only_lp.to_csv(lastpass_only_file, index=False)
 
-    # ノートが空でないものだけを抽出して別ファイルに出力
-    only_lp_note = only_lp[only_lp['note'].replace({np.nan: ''}).astype(str).str.strip() != '']
-    lastpass_only_note_file = OUTPUT_DIR / 'lastpass_only_note.csv'
-    only_lp_note.to_csv(lastpass_only_note_file, index=False)
-
     # 2. 両方に存在し内容が異なるデータ（urlとusernameが主キー、passwordかnoteが異なる場合のみ）
     merged = pd.merge(lp_chrome, ch_chrome, on=['url', 'username'], suffixes=('_lp', '_ch'))
     diff = merged[(merged['password_lp'] != merged['password_ch']) | (merged['note_lp'] != merged['note_ch'])]
+
+    # 差分の詳細を抽出
+    # password, noteの差分を個別に抽出
+    password_diff = diff['password_lp'] != diff['password_ch']
+    note_diff = diff['note_lp'] != diff['note_ch']
+
+    # passwordとnoteのdiffをOR結合
+    password_note_diff = diff[password_diff | note_diff]
+
     # LastPass側のデータのみCSV出力
     cols = ['name_lp', 'url', 'username', 'password_lp', 'note_lp']
-    diff_out = diff[cols].rename(columns={
+    diff_out = password_note_diff[cols].rename(columns={
         'name_lp': 'name',
         'password_lp': 'password',
         'note_lp': 'note'
@@ -83,7 +89,7 @@ def main():
         with open(md_path, 'w', encoding='utf-8') as f:
             f.write(md)
 
-    make_diff_md_jinja(diff, lastpass_diff_md_file, 'diff_template.md.j2')
+    make_diff_md_jinja(password_note_diff, lastpass_diff_md_file, 'diff_template.md.j2')
 
     # 統計データ出力（Jinja2テンプレート版）
     def make_stats_md_jinja(lp_df, ch_df, md_path, template_path):
@@ -103,9 +109,6 @@ def main():
             'lastpass_only_sites': len(lp_sites - ch_sites),
             'chrome_only_sites': len(ch_sites - lp_sites),
             'both_sites': len(lp_sites & ch_sites),
-            # ノートが空でないものの数
-            'lastpass_note_count': lp_df['note'].replace({np.nan: ''}).astype(str).str.strip().replace('', np.nan).dropna().shape[0],
-            'chrome_note_count': ch_df['note'].replace({np.nan: ''}).astype(str).str.strip().replace('', np.nan).dropna().shape[0],
         }
         md = template.render(stats=stats)
         with open(md_path, 'w', encoding='utf-8') as f:
