@@ -1,0 +1,6 @@
+# 除外したいファイル
+*.csv
+*.md
+# Pythonキャッシュ
+__pycache__/
+*.pyc

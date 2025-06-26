@@ -1,0 +1,31 @@
+# LastPass/Chrome 差分比較
+
+{% for row in items %}
+## {{ row.name_lp or row.name_ch or '(no name)' }} ({{ row.url_lp or row.url_ch or '(no url)' }})
+- **username**: {{ row.username_lp or row.username_ch or '(no username)' }}
+
+{% if row.password_lp != row.password_ch %}
+**[パスワード]**
+- LastPass: `{{ row.password_lp or '' }}`
+- Chrome  : `{{ row.password_ch or '' }}`
+
+{% endif %}
+{% if row.note_lp != row.note_ch %}
+**[ノート]**
+- LastPass:
+```
+{{ row.note_lp or '（なし）' }}
+```
+- Chrome:
+```
+{{ row.note_ch or '（なし）' }}
+```
+{% endif %}
+{% set diffs = [] %}
+{% if row.password_lp != row.password_ch %}{% set _ = diffs.append('パスワードが異なります') %}{% endif %}
+{% if row.note_lp != row.note_ch %}{% set _ = diffs.append('ノートが異なります') %}{% endif %}
+{% if diffs %}
+**差分:** {{ diffs | join('、') }}
+{% endif %}
+
+{% endfor %}
