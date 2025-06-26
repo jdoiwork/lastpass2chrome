@@ -56,12 +56,16 @@ def main():
     only_lp.drop(columns=['key'], inplace=True)
     only_lp.to_csv(lastpass_only_file, index=False)
 
-    # 2. 両方に存在し内容が異なるデータ
-    merged = pd.merge(lp_chrome, ch_chrome, on='key', suffixes=('_lp', '_ch'))
+    # 2. 両方に存在し内容が異なるデータ（urlとusernameが主キー、passwordかnoteが異なる場合のみ）
+    merged = pd.merge(lp_chrome, ch_chrome, on=['url', 'username'], suffixes=('_lp', '_ch'))
     diff = merged[(merged['password_lp'] != merged['password_ch']) | (merged['note_lp'] != merged['note_ch'])]
     # LastPass側のデータのみCSV出力
-    cols = ['name_lp', 'url_lp', 'username_lp', 'password_lp', 'note_lp']
-    diff_out = diff[cols].rename(columns={c: c[:-3] for c in cols})
+    cols = ['name_lp', 'url', 'username', 'password_lp', 'note_lp']
+    diff_out = diff[cols].rename(columns={
+        'name_lp': 'name',
+        'password_lp': 'password',
+        'note_lp': 'note'
+    })
     diff_out.to_csv(lastpass_diff_file, index=False)
 
     # Markdown形式で比較用ファイルをJinja2テンプレートで出力

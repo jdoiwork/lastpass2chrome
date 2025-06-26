@@ -20,7 +20,7 @@ def load_chrome_csv(path):
     return chrome_data
 
 def load_lastpass_csv_as_chrome(path):
-    """LastPass CSVをChrome形式のリストに変換"""
+    """LastPass CSVをChrome形式のリストに変換（不要な列はドロップ）"""
     chrome_rows = []
     with open(path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -32,6 +32,8 @@ def load_lastpass_csv_as_chrome(path):
                 'password': row.get('password', ''),
                 'note': row.get('extra', '')
             }
+            # Chromeのデータ構造に存在しない列は除外
+            chrome_row = {k: chrome_row[k] for k in CHROME_FIELDS}
             chrome_rows.append(chrome_row)
     return chrome_rows
 
