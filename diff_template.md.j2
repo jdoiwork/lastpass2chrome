@@ -1,8 +1,9 @@
 # LastPass/Chrome 差分比較
 
 {% for row in items %}
-## {{ row.name_lp or row.name_ch or '(no name)' }} ({{ row.url_lp or row.url_ch or '(no url)' }})
+## {{ row.name_lp or row.name_ch or '(no name)' }}
 - **username**: {{ row.username_lp or row.username_ch or '(no username)' }}
+- **url**: {{ row.url_lp or row.url_ch or '(no url)' }}
 
 {% if row.password_lp != row.password_ch %}
 **[パスワード]**
