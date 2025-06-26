@@ -1,17 +1,14 @@
 # LastPass/Chrome パスワード統計
 
-- LastPass 登録件数: {{ stats.lastpass_count }}
-- Chrome 登録件数: {{ stats.chrome_count }}
-- LastPass サイト数: {{ stats.lastpass_sites }}
-- Chrome サイト数: {{ stats.chrome_sites }}
-- LastPass ユーザー名種類: {{ stats.lastpass_usernames }}
-- Chrome ユーザー名種類: {{ stats.chrome_usernames }}
-- LastPass パスワード種類: {{ stats.lastpass_passwords }}
-- Chrome パスワード種類: {{ stats.chrome_passwords }}
+| 項目 | LastPass | Chrome |
+|------|----------|--------|
+| 登録件数 | {{ stats.lastpass_count }} | {{ stats.chrome_count }} |
+| サイト数 | {{ stats.lastpass_sites }} | {{ stats.chrome_sites }} |
+| ユーザー名種類 | {{ stats.lastpass_usernames }} | {{ stats.chrome_usernames }} |
+| パスワード種類 | {{ stats.lastpass_passwords }} | {{ stats.chrome_passwords }} |
 
-## LastPassのみのサイト数
-- {{ stats.lastpass_only_sites }}
-## Chromeのみのサイト数
-- {{ stats.chrome_only_sites }}
-## 両方に存在するサイト数
-- {{ stats.both_sites }}
+| サイト比較 | 件数 |
+|-------------|------|
+| LastPassのみのサイト数 | {{ stats.lastpass_only_sites }} |
+| Chromeのみのサイト数 | {{ stats.chrome_only_sites }} |
+| 両方に存在するサイト数 | {{ stats.both_sites }} |

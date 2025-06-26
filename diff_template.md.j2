@@ -1,7 +1,7 @@
 # LastPass/Chrome 差分比較
 
 {% for row in items %}
-## {{ row.name or row.name_lp or row.name_ch or '(no name)' }}
+## {{ loop.index }}. {{ row.name or row.name_lp or row.name_ch or '(no name)' }}
 
 | 項目      | サフィックスなし | LastPass | Chrome |
 |-----------|--------------|----------|--------|
